@@ -1,4 +1,10 @@
 pandas
+numpy
+scipy
 statsmodels
 matplotlib
 requests
+pyarrow
+jinja2
+pypandoc_binary
+pytest

@@ -1,0 +1,15 @@
+method,determinant,ph,mean,contribution
+A,investment rate,-1.6918,-1.6243,-0.1124
+A,working-age population growth,-2.5975,-2.7470,-0.5511
+A,secondary enrolment,-1.9911,-2.4074,0.0226
+B,life expectancy (1/LE),0.0146,0.0143,-0.0464
+B,fertility (log),0.6849,0.8623,0.2205
+B,rule of law,0.3930,0.5842,-0.1577
+B,investment share,0.2012,0.2171,-0.0168
+B,government consumption,0.1511,0.1795,0.0415
+B,openness,0.6469,0.7576,-0.0199
+B,democracy,0.4090,0.5518,-0.0040
+B,democracy squared,0.1673,0.3625,0.0175
+B,inflation,0.0405,0.0957,0.0877
+B,female schooling years,9.2333,8.3104,-0.0223
+B,male schooling years,8.4942,8.9032,0.0015

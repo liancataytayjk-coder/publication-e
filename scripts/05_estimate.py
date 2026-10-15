@@ -419,6 +419,26 @@ def main():
     rec = pd.DataFrame(rec)
     rec.to_csv(TABLES / "reconciliation.csv", index=False, float_format="%.5f")
 
+    # contributions of each determinant to the Philippine steady state, relative to the sample mean (D14)
+    con = []
+    w = a_window_sample(m, 1995, ["dln_y", "ln_y0", "ln_s", "ln_ngd", "ln_school"])
+    fa95 = fit_a(w)
+    pw, mw = w.set_index("iso3").loc[PH], w.mean(numeric_only=True)
+    lab = {"ln_s": "investment rate", "ln_ngd": "working-age population growth", "ln_school": "secondary enrolment"}
+    for k in ["ln_s", "ln_ngd", "ln_school"]:
+        con.append(dict(method="A", determinant=lab[k], ph=pw[k], mean=mw[k],
+                        contribution=fa95.params[k] * (pw[k] - mw[k]) / (-fa95.params["ln_y0"])))
+    x20 = d[d.period == 2020]
+    p20, m20 = x20.set_index("iso3").loc[PH], x20.mean(numeric_only=True)
+    labb = {"inv_life": "life expectancy (1/LE)", "ln_fert": "fertility (log)", "rule_law": "rule of law",
+            "csh_i": "investment share", "csh_g": "government consumption", "open": "openness",
+            "democracy": "democracy", "democracy_sq": "democracy squared", "infl_c": "inflation",
+            "yrs_f": "female schooling years", "yrs_m": "male schooling years"}
+    for k in [x for x in XB + XEXOG if x not in SHOCK_VARS]:
+        con.append(dict(method="B", determinant=labb[k], ph=p20[k], mean=m20[k],
+                        contribution=fb.params[k] * (p20[k] - m20[k]) / (-b_main)))
+    pd.DataFrame(con).to_csv(TABLES / "steady_state_contributions.csv", index=False, float_format="%.4f")
+
     # ---------------- RQ5 policy: move each determinant to the ASEAN-peer median (latest period)
     last_p = d.period.max()
     full = panel[panel.period == last_p].set_index("iso3")

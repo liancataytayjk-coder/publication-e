@@ -1,0 +1,97 @@
+---
+title: "Session handoff: Approaching but Not Quite — the Philippine steady state (Publication E)"
+subtitle: "Context for a new Claude Code session"
+date: "2026-10-15"
+output:
+  html_document:
+    toc: true
+  word_document:
+    toc: true
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+# 0. Read this first (for the new Claude session)
+
+The work is in `liancataytayjk-coder/publication-e`, branch **`claude/lucid-darwin-vt965i`**. The default branch may not contain it.
+
+```bash
+git fetch origin claude/lucid-darwin-vt965i && git checkout claude/lucid-darwin-vt965i
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+PYTHON=.venv/bin/python ./run_all.sh
+```
+
+Read `CLAUDE.md`, then this file. Follow the rules in section 3. The workflow skill used throughout is `empirical-econ-study` (the user asked for "econ-writer", which does not exist in this environment).
+
+# 1. How to start a new session (for the user)
+
+1. Go to claude.ai/code and click **New session**.
+2. Pick the repository `liancataytayjk-coder/publication-e` and an environment with network access (downloads need dataverse.nl, rug.nl, api.worldbank.org, raw.githubusercontent.com, ourworldindata.org, api.crossref.org).
+3. Choose branch `claude/lucid-darwin-vt965i` if offered.
+4. Upload the files in section 2 if you have them.
+5. Send this first message: "Read `docs/session_handoff.Rmd` on branch `claude/lucid-darwin-vt965i` and `CLAUDE.md`, check out the branch, run `./run_all.sh`, then wait."
+
+# 2. Must-upload list (files not in the repository)
+
+| # | File | Why |
+|---|------|-----|
+| 1 | Barro (2015) *Economic Journal* PDF, if available | targets were typed from the 2012 NBER working paper; check against the published table |
+| 2 | Target journal's author guidelines | word/abstract limits, reference style (not yet chosen) |
+| 3 | Author name(s), affiliation, funding, competing interests | placeholders in the manuscript |
+| 4 | Any adviser comments | to be addressed in the template |
+
+The reference PDFs (MRW, Barro WP, Kremer–Willis–You WP) were downloaded to `refs/`, which is gitignored for copyright; `refs/` is re-creatable from the URLs in `CLAUDE.md`.
+
+# 3. Standing rules
+
+- Push only to `claude/lucid-darwin-vt965i`. No pull request unless asked.
+- Raw data untouched and logged in `data/raw/source_log.md`.
+- Outputs only from scripts; edit `paper/manuscript_template.md`, never `paper/manuscript.md/.docx`.
+- Every choice goes in the decisions log in `CLAUDE.md` (D1–D14 so far), labelled pre-registered / supplementary / exploratory.
+- Writing style: simple, define terms (words → formula → example), paragraphs over bullets.
+
+# 4. The study in one page
+
+**Question.** Is the Philippines approaching its *own* (conditional) Solow steady state, and why does it seem to approach without arriving?
+
+**Notation.** y income per person; y\* steady-state path; d = ln y − ln y\* (negative = below); λ speed of convergence, b = −(1 − e^{−λτ})/τ; g\* = 0.02 steady-state growth.
+
+**Two reference designs (user's choice: one classic, one recent and rigorous).**
+- Method A — Mankiw, Romer & Weil (1992): cross-section OLS of 25-year growth on initial income, ln s, ln(n+g+δ), ln SCHOOL; rolling windows 1960–85 … 1998–2023.
+- Method B — Barro (2015): 2SLS panel of 5-year growth on lagged income, time effects and steady-state determinants (life expectancy, fertility, rule of law, investment, schooling by sex, government consumption, openness, democracy, inflation; terms of trade as a shock); 98 countries, 1965–2023. Fixed-effects version corrected by indirect inference.
+
+**Distance and decomposition.** d = (ĝ − g\*)/b; Δd = closing + world shock + country shock − steady state moving (exact identity).
+
+**Hypotheses.** H1 ordinary convergence; H2 moving target; H3 shocks; H4 low own steady state.
+
+# 5. Data facts and answers to the user's questions
+
+- PWT 11.0 (1950–2023) is the main data; WDI for demography, enrolment, inflation; Barro–Lee v3 for schooling; V-Dem (via Our World in Data) replaces Barro's proprietary ICRG and Freedom House indices.
+- Official statistics: PWT, WDI, Barro–Lee, V-Dem series. The study's own constructions: SCHOOL proxy, national-prices K/Y, steady states, distances, the decomposition.
+- "Do the two methods converge on one answer?" On speed yes (1–2.5%/yr). On the level of the distance not by the pre-registered rule (A above, B below); the supplementary reconciliation shows the difference comes from measuring population growth as a 25-year average (A) versus current fertility (B). With current population growth both put the Philippines close to its steady state.
+
+# 6. Results so far
+
+See `CLAUDE.md` → Results. Headlines: replication gate PASS 17/17; λ_B = 2.1% (1.2–3.3), λ_A = 1.2% (0.9–1.5); d_B(2020) = −0.22 [−0.77, 1.01]; d_A(2023) = +0.41 [0.03, 0.82], +0.05 with current population growth; 1985–2020 closing +0.20 offset by steady state rising +0.245; H3 supported, H1/H2/H4 not by the pre-registered rules (H2 holds after 1985, exploratory).
+
+# 7. File map
+
+| What | Where | Built by |
+|------|-------|----------|
+| Manuscript | `paper/manuscript.{md,docx}` | `scripts/08_paper.py` from `paper/manuscript_template.md` |
+| Numbers dictionary | `output/tables/paper_numbers.json` | `scripts/08_paper.py` |
+| Replication gate | `output/tables/replication_gate.csv` | `scripts/04_replicate.py` |
+| Estimates, distances, decomposition, robustness, policy | `output/tables/*.csv` | `scripts/05_estimate.py` |
+| Descriptive tables | `output/tables/desc_*.csv` | `scripts/09_descriptive.py` |
+| Exploratory K/Y | `output/exploration/` | `scripts/00_explore_steady_state.py` |
+| Figures | `output/figures/fig1–9` | `scripts/06_figures.py` |
+| Estimators and tests | `steadystate/estimators.py`, `tests/test_estimators.py` | — |
+
+# 8. Open items
+
+1. Choose the target journal and apply its format (Q8).
+2. Fill author, funding, competing-interest and AI-use placeholders.
+3. Check Barro targets against the published EJ table (Q9); replace the V-Dem dataset citation with the full one.
+4. Optional: extend to 2024–25 with PSA national accounts (Q5); verify Philippine book references before citing (Q6).

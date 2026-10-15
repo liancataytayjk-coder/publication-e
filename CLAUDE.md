@@ -116,17 +116,20 @@ where m_t = Δln y\*_t − g\*τ, split into contributions −γ_kΔX_k/b of eac
 - **Agreement rule (pre-registered):** (i) same sign in 2020: **fails** (A +0.45, B −0.22); (ii) 90% intervals overlap: passes; (iii) λ each inside the other's interval: **fails** (A's 1.4% is inside B's band, B's 2.1% is not inside A's). Correlation of the paths 1985–2020: −0.60. The disagreement is not a g\* artefact (both distances move almost one-for-one with g\*) and not a normalisation artefact (relative to the median country A puts PHL at the 74th percentile, B at the 28th).
 - **Reconciliation (supplementary, D14).** Swapping determinant sets does not flip the signs (R1 B with MRW variables −0.70; R2 A with Barro variables +0.12). What drives A's positive sign is population growth: A's steady state uses 1995–2020 average working-age population growth (2.45%/yr), which lowers PHL's steady state by 0.55 log points relative to the mean; B uses current fertility (now below the sample mean), which raises it. With current population growth (R3), A's distance falls to +0.14 (2020) and +0.05 (2023), inside B's band. Reading: the two methods catch the Philippine steady state at different points of the demographic transition; once current demography is used, both place the Philippines **close to its steady state** (within roughly ±0.25 log points), with the steady state rising.
 - **Why "not quite" (RQ4, Method B decomposition).** 1985–2020: convergence closed +0.20 log points, but the steady state rose 0.245 log points faster than the 2% path (fertility decline and longer lives relative to the world; lower inflation), and shocks netted +0.05; the distance was unchanged (−0.23 → −0.22). 1965–85: the steady state fell (−0.46 against the 2% path; inflation, rule of law, government consumption) while crises hit. Pre-registered rules: H1 not supported (no trend towards zero: −0.04 per decade); H2 not supported over 1965–2020 (cumulative movement −0.215) — *exploratory:* it holds for 1985–2020 (+0.245 vs closing +0.20); H3 supported (shock terms negative in 1980–85, 1995–2000, 2015–20); H4 not supported (PHL mean residual +0.0013 [−0.011, 0.014]: the Philippines grows as its determinants predict).
-- **Robustness.** Method B d in 2020 is negative in 13 of 14 B checks (positive only for g\* = 0.025 and for the pre-registered terms-of-trade treatment B0); Method A d in 2023 positive in all A checks (0.06 to 0.75). λ for B ranges 1.2% (10-year periods) to 2.9% (data ending 2019; Barro's window).
+- **Robustness.** Method B d at the latest date is negative in 13 of 15 B rows (positive only for g\* = 0.025 and for the pre-registered terms-of-trade treatment B0); Method A d in 2023 positive in all A checks (0.06 to 0.75). λ for B ranges 1.2% (10-year periods) to 2.9% (data ending 2019; Barro's window).
 - **Policy (RQ5).** Moving to the ASEAN-4 median: life expectancy +0.27, fertility +0.15, openness +0.11, investment +0.06 (B) / +0.63 (A) log points on the steady state; half of any gain arrives in 33 (B) to 56 (A) years.
 - **Descriptive (RQ1).** GDP per person relative to the US: 10.5% (1960), 11.3% (1980), 9.5% (2000), 13.7% (2019), 12.9% (2023) (rgdpe). Large negative years: 1984, 1985, 1991, 1998, 2020.
 
 ## Documents
 
 - `docs/01_exploring_the_question.md` — Phase 1 exploration note (hand-written).
+- `paper/manuscript_template.md` → `scripts/08_paper.py` → `paper/manuscript.md`, `paper/manuscript.docx` (journal article, IMRAD; numbers from `output/tables/paper_numbers.json`).
+- `paper/SUBMISSION_CHECKLIST.md` — what remains before submission.
+- `docs/session_handoff.Rmd` — how to resume in a new session.
 
 ## Pipeline
 
-`./run_all.sh` (Phase 7). For now: `python scripts/00_explore_steady_state.py`.
+`./run_all.sh` rebuilds everything from `data/raw/` (`--download` to refresh): clean → panels → tests → replication gate → descriptive → estimation → figures → manuscript.
 
 ## Open questions
 
@@ -135,4 +138,4 @@ where m_t = Δln y\*_t − g\*τ, split into contributions −γ_kΔX_k/b of eac
 - [ ] **Q8.** Target journal and its format (word limit, reference style). Until named, the manuscript uses a generic economics-journal format with APA-like author–date references.
 - [ ] **Q9.** Barro (2015) published EJ tables: check the targets against the published version if the user has access.
 
-**Status:** Phases 1–5 done; Phase 6 (manuscript) in progress.
+**Status:** Phases 1–7 done (2026-10-15). Remaining items are the author's: journal choice, placeholders, Barro EJ check, V-Dem citation (see `paper/SUBMISSION_CHECKLIST.md`).
