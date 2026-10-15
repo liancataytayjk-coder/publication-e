@@ -65,7 +65,7 @@ Method B is rebuilt from PWT 7.0 (`rgdpch`, the chain series, as the main choice
 
 The gate passes only if G1–G7 all pass. If it fails, stop, re-read the specification, fix the code, and log what changed. Ranges are not loosened after seeing results.
 
-**Result:** *not yet run.*
+**Result (2026-10-15, `output/tables/replication_gate.csv`): PASS — all 17 criteria.** MRW: Table I non-oil ln s 1.424 (target 1.42), ln(n+g+δ) −1.990 (−1.97), N = 98; Table II 0.697 / −1.745 / 0.654 (0.69 / −1.73 / 0.66); Table V ln y60 −0.288 / −0.366 / −0.398 and λ 0.0136 / 0.0182 / 0.0203 (all three samples on target); Table VI α 0.484, β 0.228 (0.48, 0.23). Barro: 80 countries, 783 observations (exactly as published); col 1 0.0016 (s.e. 0.0011; target 0.0019), R² 0.090 (0.095); col 2 −0.0295 (0.0064; target −0.0326), R² 0.379 (0.381); difference −0.031. `rgdpl` gives the same to three decimals. *Indicative* col 3 with public substitutes: −0.0167 (0.0025) against Barro's −0.0171 (0.0022), 691 observations; life expectancy, fertility, inflation and schooling-by-sex signs match, V-Dem rule of law and democracy are weaker than ICRG and Freedom House were for Barro.
 
 ## Decisions log
 
@@ -79,10 +79,33 @@ The gate passes only if G1–G7 all pass. If it fails, stop, re-read the specifi
 | D6 | 2026-10-15 | Barro targets are from NBER WP 18295 (2012), the working-paper version of Barro (2015). The published EJ tables were not accessible. | NBER PDF is public; EJ is paywalled. Flag in the checklist. | pre-registered |
 | D7 | 2026-10-15 | Barro col 1–2 replication: PWT 7.0 `rgdpch`, China = "CHN" (version 1), periods 1960–65 … 2005–09 (last period 4 years), growth annualised by the period length, instrument ln y_{t−1}, 2SLS, clustered by country. | Closest public analogue to Barro's description. | pre-registered |
 | D8 | 2026-10-15 | Public substitutes for Barro's X variables: V-Dem rule of law (for ICRG law and order), V-Dem electoral democracy (for Freedom House political rights), WDI CPI inflation (GDP deflator where CPI missing), Barro–Lee v3 years of schooling ages 25–64 by sex (population-weighted from 10-year age groups; v3 has no 25+ aggregate), PWT terms of trade pl_x/pl_m. | ICRG is proprietary; Freedom House is not machine-downloadable here. V-Dem is the standard public alternative. | pre-registered |
+| D9 | 2026-10-15 | Fixed-effects bias correction: **indirect inference** (match the FE slope and the within s.d. of ln y in simulated panels of the same size), not the split-panel jackknife. | Simulation tests (`tests/test_estimators.py`): with 10 five-year periods and true λ = 0.02, FE gives λ ≈ 0.042; the jackknife over-corrects (b too close to zero); indirect inference gives λ ≈ 0.024. Logged before any new-data estimate. | pre-registered |
+| D10 | 2026-10-15 | Method B sample: PWT 11.0 countries with GDP data starting by the 1965–70 period (Barro's criterion) and population ≥ 0.5 million in 1990. Main periods 1965–70 … 2015–20, 2020–23 (1960–65 lacks lagged instruments). | Mirrors Barro's sample rule; drops micro-states and post-1990 countries. | pre-registered |
+| D11 | 2026-10-15 | Method A sample per window: population ≥ 1 million at window start and mean oil rents < 20% of GDP (WDI); complete data. y = real GDP per working-age person (level from rgdpo, growth from rgdpna, PWT's recommended split); s_k = mean csh_i; n = growth of population 15–64 (WDI); SCHOOL = secondary gross enrolment × (population 15–19 / population 15–64), as MRW built it. Windows 1960–85, 1965–90, …, 1995–2020, 1998–2023. | Closest modern analogue to MRW's non-oil sample and variables. | pre-registered |
+| D12 | 2026-10-15 | Method B variables: y = rgdpe per capita (levels and growth; Barro used PWT 7 chain `rgdpch`); X = 1/life expectancy, ln fertility, V-Dem rule of law, csh_i, csh_g, openness (national current prices), V-Dem democracy and its square, inflation (period mean, capped at 100%/yr), Barro–Lee years by sex at period start, terms-of-trade growth × openness. Period averages instrumented by previous-period averages; schooling and terms of trade treated as exogenous, as Barro did. | Barro's specification with public data. The inflation cap keeps a few hyperinflation periods from dominating. | pre-registered |
 
-## Estimation plan
+## Estimation plan (pre-specified 2026-10-15, before any new-data estimate)
 
-*To be written before the first new-data estimate (Phase 4).*
+**Common settings.** PWT 11.0; g\* = 0.02 (steady-state growth per person, MRW's convention); g + δ = 0.05; λ from the exact formula λ = −ln(1 + bτ)/τ; half-life ln 2/λ. Uncertainty from a country-cluster bootstrap (499 draws; for each draw re-estimate and recompute the Philippine quantities), reported as 90% percentile intervals.
+
+**RQ1 (Objective 1, descriptive).** The Philippine path relative to peers: growth by decade, output per worker relative to the US, capital-output ratio against its implied steady state (`scripts/00`, exploratory, D2–D4), and the dating of large negative growth shocks. Descriptive; no hypothesis test.
+
+**RQ2 (Objective 2): how far is the Philippines from its own steady state, and is the distance shrinking?**
+- *Method A.* For each 25-year window, MRW Table V regression (unrestricted conditional convergence) on the D11 sample. The Philippines' distance at the window start is d₀ = (Δ̂ − g\*T)/b, using fitted growth Δ̂ (Cho–Graham logic); at the window end d_T = d₀ + (Δ_actual − g\*T). Headline: d in 2023 from the 1998–2023 window.
+- *Method B (main = Barro's preferred column 3 analogue).* 2SLS with time effects and X, no fixed effects, D10 sample, periods 1965–2023. The Philippines' distance at each period start t is d_t = (ĝ_t − g\*)/b, with ĝ_t = ã_t + b ln y_t + X_t′γ̂, where ã_t is the fitted linear trend of the estimated time effects (so world business-cycle shocks do not move the steady state). Headline: d at the start of 2020–23 and its path since 1965.
+- *Agreement rule (the user's "do the two methods converge?").* The methods agree if, at the latest common date (2020): (i) the sign of d is the same; (ii) the 90% intervals overlap; and (iii) the λ of each method lies inside the other's 90% interval. The correlation of the two Philippine d paths over 1985–2020 is reported descriptively.
+
+**RQ3 (Objective 2): how fast does the Philippines close the gap?** λ and half-life from Method A (each window; headline latest) and Method B main. Also Method B with country fixed effects, raw and corrected by indirect inference (D9), as the bound on how fast convergence could be if the Philippines' own fixed characteristics are allowed for.
+
+**RQ4 (Objective 2): why "approaching but not quite"?** For the Philippines, from Method B main, the exact period-by-period identity
+Δd_t = τb·d_t [closing, H1] + τ(a_t − ã_t) [world shock, H3] + τe_t [Philippine shock, H3] − m_t [steady state moving, H2],
+where m_t = Δln y\*_t − g\*τ, split into contributions −γ_kΔX_k/b of each determinant plus the trend term. Decision rules: H1 is supported if d is negative and its trend over 1965–2020 is towards zero; H2 if the cumulative m_t is positive and at least half the size of the cumulative closing term; H3 if the shock terms are negative in at least two of the three crisis periods named in advance (1980–85 debt crisis, 1995–2000 Asian crisis, 2015–20 and 2020–23 COVID-19); H4 (low own steady state) if the Philippines' mean residual ē_PH in Method B main is negative with a 90% bootstrap interval below zero. The "own-productivity" distance d^own = (ĝ + ē_PH − g\*)/b is reported next to d.
+
+**RQ5 (Objective 3, policy).** Steady-state gains if each Philippine determinant moved to the median of four ASEAN peers (Indonesia, Malaysia, Thailand, Viet Nam) in the latest period: Δln y\* = −γ_kΔX_k/b (Method B) and, for investment and schooling, from Method A's coefficients (Δln y\* = −(γ_k/b_A)Δln X_k). With the half-life, the time needed to close half of the new gap.
+
+**Robustness (pre-registered menu).** Method B: (B1) g\* = 0.015, 0.025, the g\* that puts the US at its steady state on average, and the g\* implied by the time-effect trend; (B2) raw time effects a_t; (B3) growth from rgdpna; (B4) 10-year periods; (B5) data ending 2019 (last period 2015–19); (B6) OLS instead of 2SLS; (B7) without the V-Dem variables; (B8) excluding oil-rich countries (mean oil rents > 20% of GDP); (B9) country fixed effects, raw and indirect-inference corrected; (B10) Barro's period window 1965–2005 on PWT 11. Method A: (A1) restricted Table VI form; (A2) ln(hc) instead of ln SCHOOL; (A3) per capita instead of per working-age person; (A4) g\* = 0.015 and 0.025. In the text, name every check under which a headline conclusion changes.
+
+**Labels.** Everything above is *pre-registered*. Anything added after the first new-data run is labelled *supplementary* (specified before running but after seeing main results) or *exploratory*.
 
 ## Results
 
@@ -103,4 +126,4 @@ The gate passes only if G1–G7 all pass. If it fails, stop, re-read the specifi
 - [ ] **Q8.** Target journal and its format (word limit, reference style). Until named, the manuscript uses a generic economics-journal format with APA-like author–date references.
 - [ ] **Q9.** Barro (2015) published EJ tables: check the targets against the published version if the user has access.
 
-**Status:** Phase 1 done; Phase 2 (data) in progress.
+**Status:** Phases 1–3 done (gate PASS); estimation plan pre-specified; Phase 4 next.
