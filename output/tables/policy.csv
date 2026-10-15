@@ -1,0 +1,12 @@
+method,determinant,ph,peer_median,gain_ln_ystar,years_to_close_half
+B,life expectancy,0.015,0.013,0.2709,33.1743
+B,fertility,0.685,0.565,0.1492,33.1743
+B,rule of law,0.393,0.417,0.0196,33.1743
+B,investment,0.201,0.255,0.0566,33.1743
+B,"schooling (years, both sexes)","9.233, 8.494","8.018, 8.528",0.0292,33.1743
+B,government consumption,0.151,0.128,0.0331,33.1743
+B,openness,0.647,1.242,0.1069,33.1743
+B,democracy,"0.409, 0.167","0.324, 0.118",0.0032,33.1743
+B,inflation,0.040,0.024,0.0268,33.1743
+A,investment,0.186,0.261,0.6333,56.4688
+A,schooling (secondary enrolment),0.135,0.098,-0.0536,56.4688

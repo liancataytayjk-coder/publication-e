@@ -1,0 +1,7 @@
+check,method,b,lam,d_2020,d_2023,d_mean_1985_2020,se,nobs,n_window,n_current
+A main (1995-2020 window),A,-0.30135,0.01434,0.45371,0.40653,,,,,
+B main,B,-0.01984,0.02089,-0.21925,,-0.28175,,,,
+"R1 Method B (panel) with MRW determinants only (ln s, ln(n+g+d), ln schooling years)",B,-0.01008,0.01034,-0.70394,,-0.57165,0.00328,1181.00000,,
+R2 Method A (cross-section 1995-2020) with Barro's determinants added,A,-0.49043,0.02697,0.11977,,,0.06317,114.00000,,
+R3 Method A (1995-2020) with current population growth (2015-2020) in the steady state,A,-0.30135,0.01434,0.14323,,,,,0.02446,0.01844
+R3 Method A (1998-2023) with current population growth (2018-2023) in the steady state,A,-0.26425,0.01227,,0.05134,,,,0.02289,0.01654

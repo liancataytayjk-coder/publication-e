@@ -25,12 +25,7 @@ BARRO80 = """ARG AUS AUT BEL BGD BOL BRA BWA CAN CHE CHL CHN CIV CMR COG COL CRI
 GBR GHA GMB GRC GTM HND HTI IDN IND IRL ISL ITA JAM JOR JPN KEN KOR LKA LUX MAR MEX MLI MWI MYS NER NIC NLD NOR NZL
 PAK PAN PER PHL PNG PRT PRY SEN SGP SLE SLV SWE TGO THA TTO TUN TUR TWN UGA URY USA VEN ZAF ZMB""".split()
 
-PERIODS = list(range(1960, 2025, 5))  # period start years; the 2020 period ends in 2023
-LAST_YEAR = 2023
-
-
-def period_end(s, last=LAST_YEAR):
-    return min(s + 5, last)
+LAST_YEAR = 2023  # PWT 11.0 ends in 2023; the last 5-year period is 2020-23
 
 
 # --------------------------------------------------------------------------- 1. MRW original
@@ -122,8 +117,8 @@ def build_mrw_windows(cy):
 
 
 # --------------------------------------------------------------------------- 4. Method B panel (PWT 11)
-def build_barro_panel(cy):
-    cy = cy.copy()
+def build_barro_panel(cy, step=5, last=LAST_YEAR, name="barro_panel"):
+    cy = cy[cy.year <= last].copy()
     cy["ln_y"] = np.log(cy.rgdpe / cy["pop"])
     cy["ln_y_na"] = np.log(cy.rgdpna / cy["pop"])
     cy["inv_life"] = 1 / cy.life_exp
@@ -133,21 +128,23 @@ def build_barro_panel(cy):
     by = cy.set_index(["iso3", "year"])
     avg_vars = ["inv_life", "ln_fert", "rule_law", "csh_i", "csh_g", "open", "democracy", "infl_c", "hc"]
     rows = []
-    for s in PERIODS:
-        e = period_end(s)
+    for s in range(1960, last, step):
+        e = min(s + step, last)
         win = cy[(cy.year >= s) & (cy.year < max(e, s + 1))]
-        lag = cy[(cy.year >= s - 5) & (cy.year < s)]
+        lag = cy[(cy.year >= s - step) & (cy.year < s)]
         A = win.groupby("iso3")[avg_vars].mean()
         L = lag.groupby("iso3")[avg_vars].mean().add_suffix("_lag")
         y0 = by.xs(s, level="year")
         y1 = by.xs(e, level="year")
-        yl = by.xs(s - 1, level="year") if (s - 1) in cy.year.values else None
+        yl = by.xs(s - 1, level="year")
         f = pd.DataFrame({
             "period": s, "tau": e - s,
-            "ln_y": y0.ln_y, "ln_y_inst": yl.ln_y if yl is not None else np.nan,
+            "ln_y": y0.ln_y, "ln_y_inst": yl.ln_y,
             "growth": (y1.ln_y - y0.ln_y) / (e - s),
             "growth_na": (y1.ln_y_na - y0.ln_y_na) / (e - s),
             "tot_change": np.log(y1.tot / y0.tot) / (e - s),
+            "n_pop": np.log(y1["pop"] / y0["pop"]) / (e - s),
+            "n_pop_lag": np.log(y0["pop"] / by.xs(max(s - step, 1950), level="year")["pop"]) / (s - max(s - step, 1950)),
             "pop_m": y0["pop"],
         }).join(A).join(L)
         b_year = min(s, 2015)  # D8: Barro-Lee ends in 2015; 2020 uses 2015
@@ -158,6 +155,13 @@ def build_barro_panel(cy):
         rows.append(f.reset_index())
     d = pd.concat(rows, ignore_index=True)
     d["tot_x_open"] = d.tot_change * d.open
+    # MRW-type determinants inside Barro's panel (supplementary reconciliation, D14)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        d["ln_s"], d["ln_s_lag"] = np.log(d.csh_i), np.log(d.csh_i_lag)
+        d["ln_ngd"], d["ln_ngd_lag"] = np.log(d.n_pop + 0.05), np.log(d.n_pop_lag + 0.05)
+    d["ln_yrs"] = np.log(d.yrs_all)
+    mrw_cols = ["ln_s", "ln_s_lag", "ln_ngd", "ln_ngd_lag", "ln_yrs"]
+    d[mrw_cols] = d[mrw_cols].replace([np.inf, -np.inf], np.nan)
     d["democracy_sq"] = d.democracy ** 2
     d["democracy_sq_lag"] = d.democracy_lag ** 2
     # D10: Barro-like sample: GDP data starting by the 1965-70 period, population >= 0.5 million in 1990
@@ -167,7 +171,7 @@ def build_barro_panel(cy):
     d["sample_B"] = d.iso3.isin(keep)
     oil = cy[(cy.year >= 1970) & (cy.year <= 2019)].groupby("iso3").oil_rents.mean()
     d["oil_mean"] = d.iso3.map(oil)
-    d.to_parquet(PROC / "barro_panel.parquet", index=False)
+    d.to_parquet(PROC / f"{name}.parquet", index=False)
     return d
 
 
@@ -182,6 +186,8 @@ if __name__ == "__main__":
     ok = w[w.sample_A].dropna(subset=["ln_y0", "dln_y", "ln_s", "ln_ngd", "ln_school"])
     print("Method A windows (complete, sample_A):", ok.groupby("start").size().to_dict())
     print("PHL in windows:", sorted(ok[ok.iso3 == "PHL"].start.tolist()))
+    build_barro_panel(cy, step=10, name="barro_panel10")       # robustness B4
+    build_barro_panel(cy, last=2019, name="barro_panel2019")    # robustness B5
     p = build_barro_panel(cy)
     s = p[p.sample_B]
     print("Method B panel:", s.iso3.nunique(), "countries,", len(s.dropna(subset=["growth", "ln_y", "ln_y_inst"])), "obs with growth")

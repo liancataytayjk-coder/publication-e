@@ -1,0 +1,5 @@
+h,rule,value,supported
+H1,d < 0 and trend of d over 1965-2020 towards zero,mean d -0.202; trend -0.0378 per decade,False
+H2,cumulative target movement > 0 and >= half the cumulative closing term,cum move -0.215; cum closing 0.219,False
+H3,"shock terms negative in >= 2 of the 3 crisis periods (1980-85, 1995-2000, 2015-20)",1980: -0.218; 1995: -0.138; 2015: -0.055,True
+H4,Philippine mean residual < 0 with 90% bootstrap interval below zero,"0.0013 [-0.0106, 0.0141]",False

@@ -1,0 +1,5 @@
+rule,A,B,ok
+(i) same sign of d in 2020,0.4537098995233596,-0.2192528987821527,False
+(ii) 90% intervals overlap in 2020,"[0.118, 0.891]","[-0.768, 1.008]",True
+(iii) lambda of each inside the other's 90% interval,"0.0143 [0.0108, 0.0183] (1995-2020)","0.0209 [0.0120, 0.0327]",False
+correlation of A and B distance paths 1985-2020 (descriptive),8,,-0.5974279941973317
