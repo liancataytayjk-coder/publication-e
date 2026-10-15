@@ -1,74 +1,92 @@
 # Publication E: Is the Philippines approaching its steady state? — project brief
 
-The study asks whether the Philippine economy is approaching its Solow steady state, and why it seems to approach without arriving. It separates three meanings: the country's own (conditional) steady state, the world frontier, and a steady growth rate. It then measures how much of the persistent distance is due to the steady state moving, to recurring shocks, and to a low steady state (stalled productivity). Units: the Philippines, 1960 to the latest year, against ASEAN peers, Korea, China and the United States. Output and target journal: **to be decided (Q3)**. Reference design: **to be decided (Q1)**; the recommended design is Mankiw, Romer & Weil (1992) with Cho & Graham (1996). See `docs/01_exploring_the_question.md`.
+Journal article. The study asks whether the Philippine economy is approaching **its own** (conditional) Solow steady state, and why it seems to approach without arriving. It answers with two reference designs that should agree: the classic cross-country augmented Solow model of Mankiw, Romer & Weil (1992, "MRW"), and the more recent panel conditional-convergence design of Barro (2015, "Convergence and Modernisation", *Economic Journal*). Barro's design pays explicit attention to the bias from country fixed effects (the Hurwicz–Nickell bias). Each design gives (i) the Philippines' distance from its steady state and (ii) the speed at which that distance closes. The gap is then decomposed into the steady state moving, shocks, and closing. Units: 1960–2023, Penn World Table 11.0, about 100 countries, with the Philippines as the focus and ASEAN peers for comparison.
 
-**Current phase: 1 (Research).** The exploration note has been written. The brief is in draft until the user answers Q1–Q3.
+**User decisions (2026-10-15):** Q2 own steady state; Q1 two foundational papers, one classic (MRW 1992) and one recent and rigorous (Barro 2015), hoping the two methods converge on one answer; Q3 journal article; Q4 no concept note — build everything from scratch with the empirical-econ-study workflow.
+
+**Current phase:** see the "Status" line at the end of this file.
 
 ## Conventions
 
-- `data/raw/` holds untouched downloads only. Every file gets an entry in
-  `data/raw/source_log.md` (URL, date pulled, base year, coverage, checksum).
+- `data/raw/` holds untouched downloads only (`scripts/01_download.py`). Every file has a row in `data/raw/source_log.md`.
 - `data/processed/` and `output/` are written by scripts, never by hand.
-- `replication/<paper>_targets.csv` holds the reference paper's coefficients.
-- No new-data estimate is reported until the replication gate passes. The
-  Phase 1 exploration (`scripts/00_explore_steady_state.py`) is labelled
-  *exploratory* and is a feasibility check only.
-- Every specification choice goes in the decisions log below, with the evidence,
-  labelled pre-registered / supplementary / exploratory.
-- Documents are rendered from templates; never edit rendered .md/.docx by hand.
-  (The Phase 1 exploration note is hand-written and quotes exploratory numbers
-  with their source file; later documents must pull numbers from output tables.)
-- User style: as simple as possible, define every term on first use (words →
-  formula → example), paragraphs over bullets/tables.
+- `replication/<paper>_targets.csv` holds the reference papers' coefficients, typed from the PDFs (MRW: QJE PDF from D. Romer's site; Barro: NBER WP 18295, revised Sept 2012, the working-paper version of Barro 2015).
+- No new-data estimate is reported until the replication gate passes.
+- Every specification choice goes in the decisions log, labelled pre-registered / supplementary / exploratory.
+- Documents are rendered from templates (`paper/*_template.md`); never edit rendered .md/.docx by hand. The Phase 1 note `docs/01_exploring_the_question.md` is the only hand-written document.
+- User style: as simple as possible, define every term on first use (words → formula → example), paragraphs over bullets/tables.
 
 ## Notation
 
 | Symbol | Meaning |
 | --- | --- |
-| t | year |
-| c | country |
-| K, Y, L | capital stock, real GDP, employment |
-| s | real investment share of GDP (gross fixed capital formation / GDP, national prices) |
-| n | employment growth |
-| g | labour-augmenting technology growth |
-| δ | depreciation rate |
-| A, h | productivity (TFP) level, human capital per worker |
-| α | capital share (1 − labour share) |
-| (K/Y)\* | steady-state capital-output ratio, s / (n + g + δ) |
-| gap | ln(K/Y) − ln(K/Y)\* |
-| λ | speed of convergence (share of the gap closed per year) |
+| i, t | country, year (or start year of a period) |
+| y | real GDP per working-age person (Method A) or per capita (Method B) |
+| s_k | investment share of GDP (physical capital) |
+| s_h | investment in human capital (MRW: SCHOOL, % of working-age population in secondary school) |
+| n | growth of working-age population (A) / of population (B) |
+| g, δ | technology growth, depreciation; g + δ = 0.05 (MRW) |
+| α, β | output elasticities of physical and human capital |
+| X | steady-state determinants (Barro: life expectancy, fertility, rule of law, investment, schooling, government consumption, openness, terms of trade, democracy, inflation) |
+| b | coefficient on ln y in a growth regression (annual rate) |
+| λ | speed of convergence: share of the remaining gap closed per year; b = −(1 − e^{−λτ})/τ |
+| y\* | steady-state path of y |
+| d | distance from steady state, d = ln y − ln y\* (negative = below) |
+| g\* | steady-state growth of y per person, 0.02 by convention |
 
-## Reference specification
+## Reference specifications
 
-*Pending Q1.* If Option A is chosen:
+**Method A — MRW (1992).** Cross-section OLS, one observation per country, window 1960–1985.
+- Levels (Tables I–II): ln(Y/L)_85 = a + b₁ ln s_k + b₂ ln(n + g + δ) [+ b₃ ln SCHOOL] + ε, with g + δ = 0.05. Restricted versions impose b₁ = −b₂ (I) and b₁ + b₂ + b₃ = 0 (II). α, β implied.
+- Convergence (Tables V–VI): ln y_85 − ln y_60 = c + b ln y_60 + γ₁ ln s_k + γ₂ ln(n+g+δ) + γ₃ ln SCHOOL + ε; λ = −ln(1 + b)/25.
+- Samples: non-oil (98), intermediate (75), OECD (22), from MRW's indicators N, I, O.
+- Steady state used by this study (Cho & Graham 1996 logic): ln y\*_{i,0} = ln y_{i,0} + (Δ̂_i − g\*T)/(−b), so d_{i,0} = (Δ̂_i − g\*T)/b, where Δ̂ is fitted growth.
 
-- Equation (MRW 1992, Tables I–II): ln(Y/L)_c = a + b₁ ln s_c + b₂ ln(n_c + g + δ) [+ b₃ ln(school)_c] + ε_c, OLS across countries, with g + δ = 0.05. Restricted version imposes b₁ = −b₂. Convergence regression (MRW Table IV–VI): growth 1960–85 on ln y_1960 and the same regressors.
-- Cho & Graham (1996): use the fitted steady state to compute each country's distance, ln y_c − ln y\*_c, and classify countries as above or below.
-- Samples: MRW non-oil (98), intermediate (75) and OECD (22). The targets must be typed from the PDF into `replication/mrw1992_targets.csv`. Do not type them from memory.
+**Method B — Barro (2015).** Panel of 5-year periods 1960–65, …, 2005–09; 80 countries (WP Table 2); dependent variable is the annual growth rate of real per capita GDP (PWT 7.0, 2005 international dollars) over each period; regressors are ln y at the period start plus time effects, with ln y one year earlier as the instrument.
+- Col 1: time effects only. Col 2: plus country fixed effects. Col 3: plus X variables (period averages, instrumented by lagged values), no fixed effects. Col 4: col 3 plus fixed effects.
+- Errors correlated within countries (we use 2SLS with country-clustered standard errors).
+- Barro's argument: with ~10 periods, fixed effects overstate convergence (Hurwicz–Nickell bias), so col 3 (X variables, no FE) is his preferred estimate, about 1.7% per year.
+
+## Replication gate (pre-registered 2026-10-15, before any estimate)
+
+Method A uses MRW's own dataset (`data/raw/mrw1992/MRW1992.txt`), so tolerances only allow for rounding in the published tables.
+
+- **G1 (MRW Table I, non-oil):** ln s_k coefficient within ±0.02 of 1.42; ln(n+g+δ) within ±0.03 of −1.97; N = 98.
+- **G2 (MRW Table II, non-oil):** ln s_k within ±0.02 of 0.69; ln(n+g+δ) within ±0.03 of −1.73; ln SCHOOL within ±0.02 of 0.66.
+- **G3 (MRW Table V, all three samples):** ln y_60 coefficient within ±0.005 of target (−0.289, −0.366, −0.398); implied λ within ±0.0005 of target (0.0137, 0.0182, 0.0203).
+- **G4 (MRW Table VI, non-oil):** implied α within ±0.02 of 0.48 and implied β within ±0.02 of 0.23.
+
+Method B is rebuilt from PWT 7.0 (`rgdpch`, the chain series, as the main choice; `rgdpl` is reported alongside but does not decide the gate). Barro used a SUR-type estimator and a dataset we cannot see, so the tolerances are wider.
+
+- **G5 (Barro Table 1, col 1, no FE):** coefficient on ln y_lag in [−0.0010, 0.0050] (target 0.0019), and not significantly negative at 5%.
+- **G6 (Barro Table 1, col 2, FE):** coefficient in [−0.0400, −0.0250] (target −0.0326), significant at 1%.
+- **G7 (ordering):** col 2 coefficient below col 1 by at least 0.020 (target gap 0.0345).
+- *Indicative only (not part of the gate):* col 3 with public substitutes for ICRG law and order (V-Dem rule of law) and Freedom House (V-Dem electoral democracy); expected in [−0.025, −0.010].
+
+The gate passes only if G1–G7 all pass. If it fails, stop, re-read the specification, fix the code, and log what changed. Ranges are not loosened after seeing results.
+
+**Result:** *not yet run.*
 
 ## Decisions log
 
 | # | Date | Decision | Evidence / reason | Status |
 | --- | --- | --- | --- | --- |
-| D1 | 2026-10-15 | Exploration uses Penn World Table 11.0 (1950–2023) for all countries. | Only public source with consistent capital stocks, depreciation, human capital and TFP for all peers. | exploratory |
-| D2 | 2026-10-15 | National-prices K/Y = (rnna / rgdpna) × (pl_n / pl_gdpo) in 2021. | rnna and rgdpna use different PPPs. The accumulation identity ΔK = sY − δK only balances after rescaling: the implied factor is 1.61 for PHL, against 1/0.605 = 1.65; for the USA it is 1.01 against 1.00. | exploratory |
-| D3 | 2026-10-15 | (K/Y)\* uses 10-year trailing means of s, n, δ. V1: g = 0.02 (MRW convention). V2: n + g replaced by trend real GDP growth. | V1 is the theoretically correct form but needs an assumed g; V2 avoids choosing g but treats transitional growth as permanent. PHL TFP growth 2010–19 (≈1%/yr, labour share ≈0.43) implies g ≈ 2.4%, close to V1. The USA sits +26% above under V1 in 2019, so gap *levels* are not reliable; use changes. | exploratory |
-| D4 | 2026-10-15 | Speed-of-convergence regression uses 1980–2019 (excludes COVID years), with HAC standard errors (3 lags). | A single 2020 outlier would dominate a 40-observation regression. | exploratory |
+| D1 | 2026-10-15 | PWT 11.0 (1950–2023) is the main dataset for new estimates. | Only public source with consistent PPP output, capital, investment shares and human capital for ~180 countries. | pre-registered |
+| D2 | 2026-10-15 | National-prices K/Y = (rnna / rgdpna) × (pl_n / pl_gdpo)₂₀₂₁ for the descriptive capital-output analysis. | Accumulation identity balances only after rescaling (implied factor 1.61 PHL vs 1/0.605 = 1.65; USA 1.01 vs 1.00). | exploratory |
+| D3 | 2026-10-15 | Descriptive (K/Y)\* from 10-year trailing means; V1 g = 0.02, V2 trend GDP growth. | See `docs/01_exploring_the_question.md`. Gap levels are sensitive to g; use changes. | exploratory |
+| D4 | 2026-10-15 | Descriptive speed regression on K/Y gap uses 1980–2019, HAC(3). | Avoid COVID outlier. | exploratory |
+| D5 | 2026-10-15 | Reference designs: MRW (1992) as the classic, Barro (2015) as the recent rigorous design. Cho & Graham (1996) logic for the MRW-implied distance. | User's choice of "one classic, one recent and rigorous". Barro directly addresses own-steady-state convergence and the FE bias. Both have public data for a replication gate. | pre-registered |
+| D6 | 2026-10-15 | Barro targets are from NBER WP 18295 (2012), the working-paper version of Barro (2015). The published EJ tables were not accessible. | NBER PDF is public; EJ is paywalled. Flag in the checklist. | pre-registered |
+| D7 | 2026-10-15 | Barro col 1–2 replication: PWT 7.0 `rgdpch`, China = "CHN" (version 1), periods 1960–65 … 2005–09 (last period 4 years), growth annualised by the period length, instrument ln y_{t−1}, 2SLS, clustered by country. | Closest public analogue to Barro's description. | pre-registered |
+| D8 | 2026-10-15 | Public substitutes for Barro's X variables: V-Dem rule of law (for ICRG law and order), V-Dem electoral democracy (for Freedom House political rights), WDI CPI inflation (GDP deflator where CPI missing), Barro–Lee v3 years of schooling ages 25–64 by sex (population-weighted from 10-year age groups; v3 has no 25+ aggregate), PWT terms of trade pl_x/pl_m. | ICRG is proprietary; Freedom House is not machine-downloadable here. V-Dem is the standard public alternative. | pre-registered |
 
-## Exploratory findings (2026-10-15; `output/exploration/`)
+## Estimation plan
 
-- PHL national-prices K/Y stayed at about 1.9–2.15 over 1985–2019, so it looks like a steady state.
-- ln(K/Y)\* (V1) rose by 0.30 over 2010–19 (0.26 from s, 0.06 from n, −0.02 from δ) while ln(K/Y) rose by 0.07. The gap went from about 0 to −0.21 (V1); under V2 it stays about 0.
-- TFP (rtfpna) is lower in 2023 than in 1980. Output per worker grew 1.1%/yr over 1980–2023.
-- Output per worker relative to the US: 18.6% (1960), 19.5% (1980), 12.1% (2000), 18.1% (2019), 16.4% (2023).
-- λ ≈ 0.10 (SE 0.05), half-life ≈ 7 years (1980–2019). Noisy; not for citation.
+*To be written before the first new-data estimate (Phase 4).*
 
-## Draft research questions and hypotheses
+## Results
 
-- **Objective 1 (descriptive). RQ1:** the path of the distance to its own steady state and to the frontier, 1960–latest, against peers.
-- **Objective 2 (estimation). RQ2:** λ and its stability. **RQ3:** decomposition of gap changes into target movement versus the economy's own movement. **RQ4:** stochastic convergence to the US, allowing for structural breaks.
-- **Objective 3 (policy). RQ5:** steady-state and transition-time effects of higher s, h or g.
-- **Hypotheses:** H1 asymptotic approach; H2 moving target; H3 shocks faster than healing; H4 low steady state (A, g); H5 trap / multiple equilibria.
+*None yet.*
 
 ## Documents
 
@@ -76,14 +94,13 @@ The study asks whether the Philippine economy is approaching its Solow steady st
 
 ## Pipeline
 
-`python scripts/00_explore_steady_state.py` rebuilds `output/exploration/` from `data/raw/pwt/`. A `run_all.sh` will be added in Phase 2.
+`./run_all.sh` (Phase 7). For now: `python scripts/00_explore_steady_state.py`.
 
 ## Open questions
 
-- [ ] **Q1.** Reference design: A (MRW + Cho–Graham), B (Bernard–Durlauf time series), C (Kremer–Willis–You framing), or a combination? Recommended: A + B, with C for framing.
-- [ ] **Q2.** Main meaning of "steady state": own steady state (recommended), frontier, or steady growth?
-- [ ] **Q3.** Output format, audience and template (journal article, thesis chapter, policy brief).
-- [ ] **Q4.** Does a concept note or earlier draft for Publication E exist?
-- [ ] **Q5.** Data extension to 2024–25: confirm whether PSA publishes a capital stock series. If not, use the study's own perpetual-inventory extension from PSA gross fixed capital formation.
-- [ ] **Q6.** Verify the co-authors of Felipe, Abdon & Kumar (2012), and the editors of Clarete, Esguerra & Hill (2018) and Balisacan & Hill (2003). Crossref records are incomplete.
-- [ ] **Q7.** King & Rebelo (1993, AER) journal version is not on Crossref (only NBER WP w3185). Verify before citing.
+- [ ] **Q5.** Data extension to 2024–25 (PWT ends 2023): out of scope for the first version; note as a limitation.
+- [ ] **Q6.** Verify the co-authors and editors of Felipe, Abdon & Kumar (2012), Clarete, Esguerra & Hill (2018) and Balisacan & Hill (2003) before citing.
+- [ ] **Q8.** Target journal and its format (word limit, reference style). Until named, the manuscript uses a generic economics-journal format with APA-like author–date references.
+- [ ] **Q9.** Barro (2015) published EJ tables: check the targets against the published version if the user has access.
+
+**Status:** Phase 1 done; Phase 2 (data) in progress.
